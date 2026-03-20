@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""
-Бенчмарк для сравнения производительности трёх реализаций решета Эратосфена:
-1. Чистый Python
-2. Python + Rust (через ctypes)
-3. Python + Go (внешний HTTP сервис)
-"""
-
 import time
 import subprocess
 import sys

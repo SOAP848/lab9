@@ -24,6 +24,8 @@ MANIFEST
 .pytest_cache/
 .coverage
 htmlcov/
+.mypy_cache/
+.pytype/
 
 # Rust
 rust/target/
@@ -57,3 +59,17 @@ sieve_go.exe
 # Бенчмарк результаты
 results.json
 profile/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# PyPI / packaging
+*.whl
+*.tar.gz
+sieve_rust.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
