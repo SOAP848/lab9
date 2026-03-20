@@ -1,5 +1,4 @@
 import argparse
-import json
 import subprocess
 import sys
 import threading
@@ -8,22 +7,28 @@ from queue import Queue
 
 
 def parse_request_from_args() -> dict:
-    parser = argparse.ArgumentParser(description="Send JSON request to Go via stdin/stdout.")
+    parser = argparse.ArgumentParser(description="Send text request to Go via stdin/stdout.")
     parser.add_argument("--task", choices=["add", "mul", "pow"], help="Operation to perform")
     parser.add_argument("--a", type=float, help="First number")
     parser.add_argument("--b", type=float, help="Second number")
-    parser.add_argument("--json", dest="json_str", help="Raw JSON request string")
     args = parser.parse_args()
 
-    if args.json_str:
-        return json.loads(args.json_str)
-
-    # If task/a/b not passed explicitly, try reading JSON from stdin.
+    # If task/a/b not passed explicitly, try reading text from stdin:
+    #   "<task> <a> <b>"
     if args.task is None and args.a is None and args.b is None:
         raw = sys.stdin.read()
-        if not raw.strip():
-            raise SystemExit("No input JSON provided via stdin and no --task/--a/--b given")
-        return json.loads(raw)
+        raw = raw.strip()
+        if not raw:
+            raise SystemExit("No input provided via stdin and no --task/--a/--b given")
+        parts = raw.split()
+        if len(parts) < 3:
+            raise SystemExit("stdin must be: <task> <a> <b>")
+        task = parts[0]
+        if task not in {"add", "mul", "pow"}:
+            raise SystemExit(f"unknown task: {task}")
+        a = float(parts[1])
+        b = float(parts[2])
+        return {"task": task, "a": a, "b": b}
 
     if args.task is None or args.a is None or args.b is None:
         raise SystemExit("--task/--a/--b must be provided together")
@@ -35,27 +40,24 @@ def run_go(request: dict) -> str:
     here = Path(__file__).resolve()
     go_dir = (here.parent.parent / "go").resolve()
 
-    req_json = json.dumps(request)
+    # Contract (no JSON): "<task> <a> <b>\n"
+    req_text = f"{request['task']} {request['a']} {request['b']}\n"
     proc = subprocess.run(
         ["go", "run", "."],
         cwd=str(go_dir),
-        input=req_json.encode("utf-8"),
+        input=req_text.encode("utf-8"),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
 
-    # По условию контракт: Go всегда отвечает JSON в stdout.
     if proc.stderr:
-        # stderr уводим в консоль разработчика, но stdout оставляем "чистым" JSON.
         sys.stderr.write(proc.stderr.decode("utf-8", errors="replace"))
 
     stdout_text = proc.stdout.decode("utf-8", errors="replace").strip()
     if stdout_text:
         return stdout_text
 
-    stderr_text = proc.stderr.decode("utf-8", errors="replace").strip()
-    err_msg = stderr_text or f"go exited with code {proc.returncode}"
-    return json.dumps({"error": err_msg})
+    return f"ERROR go exited with code {proc.returncode}"
 
 
 def run_go_background(request: dict) -> str:
@@ -71,7 +73,7 @@ def run_go_background(request: dict) -> str:
         try:
             q.put(run_go(request))
         except Exception as exc:  # pragma: no cover (defensive)
-            q.put(json.dumps({"error": str(exc)}))
+            q.put(f"ERROR {str(exc)}")
 
     t = threading.Thread(target=worker, daemon=True)
     t.start()
@@ -82,8 +84,8 @@ def run_go_background(request: dict) -> str:
 
 def main() -> None:
     request = parse_request_from_args()
-    response_json = run_go_background(request)
-    sys.stdout.write(response_json)
+    response_text = run_go_background(request)
+    sys.stdout.write(response_text)
 
 
 if __name__ == "__main__":

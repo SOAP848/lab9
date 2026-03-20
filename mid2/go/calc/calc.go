@@ -6,14 +6,14 @@ import (
 )
 
 type Request struct {
-	Task string  `json:"task"`
-	A    float64 `json:"a"`
-	B    float64 `json:"b"`
+	Task string
+	A    float64
+	B    float64
 }
 
 type Response struct {
-	Result float64 `json:"result,omitempty"`
-	Error  string  `json:"error,omitempty"`
+	Result float64
+	Error  string
 }
 
 // Compute performs the requested operation and returns either a result or an error.
