@@ -32,6 +32,8 @@ def run_rust_via_cli(n: int, iterations: int = 10) -> float:
         cwd=rust_dir,
         capture_output=True,
         text=True,
+        encoding='utf-8',
+        errors='ignore',
     )
     if build_result.returncode != 0:
         print("Ошибка сборки Rust:")
@@ -50,15 +52,26 @@ def run_rust_via_cli(n: int, iterations: int = 10) -> float:
     # Замеряем время выполнения одной итерации через subprocess
     # Rust программа сама делает iterations итераций и выводит среднее.
     # Мы можем просто запустить её и распарсить вывод.
-    result = subprocess.run(
-        [str(bin_path), str(n), str(iterations)],
-        cwd=rust_dir,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            [str(bin_path), str(n), str(iterations)],
+            cwd=rust_dir,
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='ignore',
+        )
+    except Exception as e:
+        print(f"Ошибка запуска Rust бенчмарка: {e}")
+        return 0.0
+
     if result.returncode != 0:
         print("Ошибка выполнения Rust бенчмарка:")
         print(result.stderr)
+        return 0.0
+
+    if result.stdout is None:
+        print("Нет вывода от Rust бенчмарка")
         return 0.0
 
     # Парсим вывод, ищем строку "Среднее время: X.XXXXXX сек"

@@ -29,7 +29,7 @@ fn main() {
     let total: f64 = times.iter().sum();
     let mean = total / iterations as f64;
     let min = times.iter().fold(f64::INFINITY, |a, &b| a.min(b));
-    let max = times.iter().fold(0.0, |a, &b| a.max(b));
+    let max = times.iter().fold(0.0f64, |a, &b| a.max(b));
     let std_dev = if iterations > 1 {
         let variance = times.iter().map(|&t| (t - mean).powi(2)).sum::<f64>() / (iterations - 1) as f64;
         variance.sqrt()
