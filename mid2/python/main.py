@@ -61,12 +61,6 @@ def run_go(request: dict) -> str:
 
 
 def run_go_background(request: dict) -> str:
-    """
-    Запускаем обработку запроса в фоне (Python Thread),
-    чтобы соответствовать идее "фоновой обработки" запросов,
-    реализованной в Go через горутину.
-    """
-
     q: Queue[str] = Queue(maxsize=1)
 
     def worker() -> None:

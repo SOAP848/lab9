@@ -1,5 +1,4 @@
-/// Решето Эратосфена для нахождения всех простых чисел до n.
-/// Возвращает вектор булевых значений, где is_prime[i] = true, если i простое.
+
 pub fn sieve_of_eratosthenes(n: usize) -> Vec<bool> {
     if n < 2 {
         return vec![false; n + 1];
@@ -20,13 +19,11 @@ pub fn sieve_of_eratosthenes(n: usize) -> Vec<bool> {
     is_prime
 }
 
-/// Возвращает список простых чисел до n (включительно).
 pub fn primes_upto(n: usize) -> Vec<usize> {
     let is_prime = sieve_of_eratosthenes(n);
     (2..=n).filter(|&i| is_prime[i]).collect()
 }
 
-/// Подсчёт количества простых чисел до n.
 pub fn count_primes(n: usize) -> usize {
     let is_prime = sieve_of_eratosthenes(n);
     is_prime.iter().skip(2).filter(|&&b| b).count()

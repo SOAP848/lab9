@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Бенчмарк сравнения скорости выполнения решета Эратосфена на Rust и Python.
-"""
+
 
 import subprocess
 import sys
@@ -49,9 +47,6 @@ def run_rust_via_cli(n: int, iterations: int = 10) -> float:
         print(f"Бинарник не найден: {bin_path}")
         return 0.0
 
-    # Замеряем время выполнения одной итерации через subprocess
-    # Rust программа сама делает iterations итераций и выводит среднее.
-    # Мы можем просто запустить её и распарсить вывод.
     try:
         result = subprocess.run(
             [str(bin_path), str(n), str(iterations)],
@@ -127,8 +122,7 @@ def main():
     else:
         print("Rust бенчмарк недоступен")
 
-    # Дополнительно: можно сравнить с оптимизированной версией Python (numpy)
-    # но это не требуется.
+
 
 
 if __name__ == "__main__":
