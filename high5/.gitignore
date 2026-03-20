@@ -26,7 +26,7 @@ MANIFEST
 htmlcov/
 
 # Rust
-/target/
+rust/target/
 **/*.rs.bk
 Cargo.lock
 *.dll
