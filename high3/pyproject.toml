@@ -1,0 +1,39 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "sieve-rs"
+version = "0.1.0"
+description = "Fast Sieve of Eratosthenes implemented in Rust with Python bindings"
+readme = "README.md"
+authors = [
+    { name = "SOAP848", email = "artyom.krivoxin@mail.ru" },
+]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Rust",
+]
+keywords = ["primes", "sieve", "eratosthenes", "rust"]
+dependencies = []
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/example/sieve"
+Repository = "https://github.com/example/sieve"
+Documentation = "https://github.com/example/sieve#readme"
+
+[tool.maturin]
+module-name = "sieve._sieve"
+bindings = "cffi"
+cargo-extra-args = "--release"
+rustc-extra-args = ["-C", "target-cpu=native"]
