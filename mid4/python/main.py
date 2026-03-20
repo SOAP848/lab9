@@ -48,7 +48,14 @@ def run_go(request: dict) -> str:
         # stderr уводим в консоль разработчика, но stdout оставляем "чистым" JSON.
         sys.stderr.write(proc.stderr.decode("utf-8", errors="replace"))
 
-    return proc.stdout.decode("utf-8", errors="replace")
+    stdout_text = proc.stdout.decode("utf-8", errors="replace").strip()
+    if stdout_text:
+        return proc.stdout.decode("utf-8", errors="replace")
+
+    # Если Go не смог запуститься/скомпилироваться, stdout может быть пустым.
+    stderr_text = proc.stderr.decode("utf-8", errors="replace").strip()
+    err_msg = stderr_text or f"go exited with code {proc.returncode}"
+    return json.dumps({"error": err_msg})
 
 
 def main() -> None:
