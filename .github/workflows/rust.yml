@@ -18,9 +18,9 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Build
-      working-directory: ./high3
+      working-directory: ./high3/rust
       run: cargo build --verbose
     
     - name: Run tests
-      working-directory: ./high3
+      working-directory: ./high3/rust
       run: cargo test --verbose
